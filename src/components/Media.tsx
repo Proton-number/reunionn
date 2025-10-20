@@ -82,7 +82,7 @@ export default function Media() {
             multiple={false}
           >
             <div className="mt-4 border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-gray-400 transition-colors">
-              <UploadCloud className="h-8 w-8 text-gray-400 mb-2" />
+              <UploadCloud className="h-8 w-8 text-gray-400 mb-3" />
               <p className="text-sm text-gray-600">
                 Drag and drop your photos/videos here
               </p>
