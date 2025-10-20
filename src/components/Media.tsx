@@ -10,7 +10,8 @@ import { Button } from "./ui/button";
 import { UploadCloud } from "lucide-react";
 import { FileUploader } from "react-drag-drop-files";
 import { useAppStore } from "@/Store/appStore";
-
+import Image from "next/image";
+import heic2any from "heic2any";
 export default function Media() {
   const { uploadFile, uploading } = useAppStore();
   const [year, setYear] = useState<string | null>(null);
@@ -18,9 +19,10 @@ export default function Media() {
 
   const fileTypes = ["JPG", "PNG", "GIF", "MP4", "MOV", "HEIC"];
 
-  const handleFile = (newFiles: File | File[]) => {
-    const selectedFiles = Array.isArray(newFiles) ? newFiles : [newFiles];
-    setFiles((prev) => [...prev, ...selectedFiles]);
+  const handleFile = (newFile: File | File[]) => {
+    // Ensure only one file is set at a time
+    const selectedFile = Array.isArray(newFile) ? newFile[0] : newFile;
+    setFiles([selectedFile]);
   };
 
   const valueChange = (value: string) => {
@@ -74,7 +76,11 @@ export default function Media() {
         {/* Upload your images and pictures */}
         <div>
           <h3 className="text-sm font-medium mt-2">Upload Media</h3>
-          <FileUploader handleChange={handleFile} types={fileTypes}>
+          <FileUploader
+            handleChange={handleFile}
+            types={fileTypes}
+            multiple={false}
+          >
             <div className="mt-4 border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-gray-400 transition-colors">
               <UploadCloud className="h-8 w-8 text-gray-400 mb-2" />
               <p className="text-sm text-gray-600">
@@ -102,9 +108,12 @@ export default function Media() {
                     {file.type.startsWith("video/") ? (
                       <video className="h-4 w-4 text-gray-500 flex-shrink-0" />
                     ) : (
-                      <img
+                      <Image
+                        alt={file.name}
+                        width={400}
+                        height={200}
                         src={URL.createObjectURL(file)}
-                        className="h-[100px] w-[100px] text-gray-500 flex-shrink-0"
+                        className="w-[400px] h-[200px] object-cover rounded-md shadow-sm"
                       />
                     )}
                     <Button
