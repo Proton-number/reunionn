@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import {
   Select,
@@ -11,128 +13,102 @@ import { UploadCloud } from "lucide-react";
 import { FileUploader } from "react-drag-drop-files";
 import { useAppStore } from "@/Store/appStore";
 import Image from "next/image";
-import heic2any from "heic2any";
+
 export default function Media() {
   const { uploadFile, uploading } = useAppStore();
   const [year, setYear] = useState<string | null>(null);
-  const [files, setFiles] = useState<File[]>([]);
+  const [file, setFile] = useState<File | null>(null);
 
-  const fileTypes = ["JPG", "PNG", "GIF", "MP4", "MOV", "HEIC"];
-
-  const handleFile = (newFile: File | File[]) => {
-    // Ensure only one file is set at a time
-    const selectedFile = Array.isArray(newFile) ? newFile[0] : newFile;
-    setFiles([selectedFile]);
-  };
-
-  const valueChange = (value: string) => {
-    setYear(value);
-  };
-
-  const removeFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
+  const handleFile = (selected: File | File[]) => {
+    const chosenFile = Array.isArray(selected) ? selected[0] : selected;
+    setFile(chosenFile);
   };
 
   const handleUpload = async () => {
-    if (!year) {
-      alert("Please select a year");
-      return;
-    }
-    if (files.length === 0) {
-      alert("Please select at least one file");
-      return;
-    }
+    if (!year) return alert("Please select a year");
+    if (!file) return alert("Please select a file");
 
     try {
-      // Upload each file
-      for (const file of files) {
-        await uploadFile(file, parseInt(year));
-      }
-
-      // Clear form after successful upload
-      setFiles([]);
+      await uploadFile(file, parseInt(year));
+      setFile(null);
       setYear(null);
-    } catch (error) {
-      console.error("Upload failed:", error);
+    } catch (err) {
+      console.error("Upload failed:", err);
       alert("Upload failed. Please try again.");
     }
   };
 
   return (
-    <div>
+    <div className="space-y-4">
+      {/* Year Selector */}
       <div>
-        <h3>Select Year</h3>
-        <Select onValueChange={valueChange} value={year || undefined}>
+        <h3 className="font-medium mb-2">Select Year</h3>
+        <Select onValueChange={setYear} value={year || undefined}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select a year" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="2024">2024</SelectItem>
-            <SelectItem value="2023">2023</SelectItem>
-            <SelectItem value="2021">2021</SelectItem>
-            <SelectItem value="2020">2020</SelectItem>
+            {[2025, 2024, 2023, 2022, 2021, 2020].map((yr) => (
+              <SelectItem key={yr} value={String(yr)}>
+                {yr}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
-        {/* Upload your images and pictures */}
-        <div>
-          <h3 className="text-sm font-medium mt-2">Upload Media</h3>
-          <FileUploader
-            handleChange={handleFile}
-            types={fileTypes}
-            multiple={false}
-          >
-            <div className="mt-4 border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-gray-400 transition-colors">
-              <UploadCloud className="h-8 w-8 text-gray-400 mb-3" />
-              <p className="text-sm text-gray-600">
-                Drag and drop your photos/videos here
-              </p>
-              <p className="text-xs text-gray-500">
-                or click to browse (Max 50MB per file)
-              </p>
-            </div>
-          </FileUploader>
-        </div>
-        {/* Selected Files Preview */}
-        {files.length > 0 && (
-          <div>
-            <h3 className="text-sm font-medium">
-              Selected Files ({files.length})
-            </h3>
-            <div>
-              {files.map((file, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
-                >
-                  <div>
-                    {file.type.startsWith("video/") ? (
-                      <video className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                    ) : (
-                      <Image
-                        alt={file.name}
-                        width={400}
-                        height={200}
-                        src={URL.createObjectURL(file)}
-                        className="w-[400px] h-[200px] object-cover rounded-md shadow-sm"
-                      />
-                    )}
-                    <Button
-                      onClick={() => removeFile(index)}
-                      className=" hover:text-red-500 transition-colors flex-shrink-0 mt-2"
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* File Uploader */}
+      <div>
+        <h3 className="text-sm font-medium mb-2">Upload Media</h3>
+        <FileUploader handleChange={handleFile} multiple={false}>
+          <div className="border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-gray-400 transition">
+            <UploadCloud className="h-8 w-8 text-gray-400 mb-3" />
+            <p className="text-sm text-gray-600">
+              Drag and drop your image or video here
+            </p>
+            <p className="text-xs text-gray-500">
+              or click to browse (Max 50MB)
+            </p>
+          </div>
+        </FileUploader>
+      </div>
+
+      {/* Preview */}
+      {file && (
+        <div className="mt-3">
+          <h3 className="text-sm font-medium mb-2">Preview</h3>
+          <div className="flex flex-col gap-2">
+            {file.type.startsWith("video/") ? (
+              <video
+                controls
+                className="w-full rounded-md shadow-sm"
+                src={URL.createObjectURL(file)}
+              />
+            ) : (
+              <Image
+                alt={file.name}
+                width={400}
+                height={200}
+                src={URL.createObjectURL(file)}
+                className="w-full h-auto rounded-md object-cover shadow-sm"
+              />
+            )}
+            <Button
+              variant="destructive"
+              onClick={() => setFile(null)}
+              className="w-full"
+            >
+              Remove
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Button */}
       <Button
-        disabled={!files || !year || uploading}
+        disabled={!file || !year || uploading}
         onClick={handleUpload}
-        className="cursor-pointer mt-4 w-full"
+        className="w-full"
       >
         {uploading ? "Uploading..." : "Upload"}
       </Button>
