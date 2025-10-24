@@ -1,22 +1,22 @@
 "use client";
 import React, { useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useAppStore } from "@/Store/appStore";
+import { CldImage } from "next-cloudinary";
 
 function GalleryDetails() {
   const { galleryId } = useParams();
   const year = Number(galleryId); // Assuming galleryId is the year
 
-  const { media, fetchAllMedia } = useAppStore();
+  const { media, fetchMediaByYear } = useAppStore();
   const galleryMedia = media[year] || []; // scoped to selected year
 
   useEffect(() => {
     if (year) {
-      fetchAllMedia(year);
+      fetchMediaByYear(year);
     }
-  }, [year, fetchAllMedia]);
+  }, [year, fetchMediaByYear]);
 
   return (
     <div className="p-10 max-w-10xl mx-auto">
@@ -28,7 +28,7 @@ function GalleryDetails() {
             className="overflow-hidden rounded-lg shadow p-0 w-full aspect-square flex items-center justify-center "
           >
             {item.type === "image" ? (
-              <Image
+              <CldImage
                 src={item.file_url}
                 alt={`${item.year} photo`}
                 width={800}

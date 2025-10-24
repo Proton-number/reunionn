@@ -11,106 +11,63 @@ interface Media {
 
 interface APPSTORE {
   media: Record<number, Media[]>;
-  fetchMediaByYear: (year: number) => Promise<void>;
-  fetchAllMedia: (year: number) => Promise<void>;
   uploadFile: (file: File, year: number) => Promise<void>;
   loading: boolean;
   uploading: boolean;
+  fetchMediaByYear: (year: number) => Promise<void>;
 }
 export const useAppStore = create<APPSTORE>((set) => ({
   media: {},
   loading: false,
   uploading: false,
+
   fetchMediaByYear: async (year) => {
     set({ loading: true });
+    try {
+      const { data, error } = await supabase
+        .from("media")
+        .select("*")
+        .eq("year", year)
+        .order("created_at", { ascending: false });
 
-    const { data: files, error } = await supabase.storage
-      .from("reunion-media")
-      .list(`${year}/`, {
-        limit: 4,
-        sortBy: { column: "created_at", order: "asc" },
-      });
-    if (error) {
-      console.error("Error fetching bucket files:", error);
+      if (error) throw error;
+
+      set((state) => ({
+        media: { ...state.media, [year]: data || [] },
+      }));
+    } catch (error) {
+      console.error("Error fetching media:", error);
+    } finally {
       set({ loading: false });
-      return;
     }
-    const mediaFiles = files.map((file) => {
-      const {
-        data: { publicUrl },
-      } = supabase.storage
-        .from("reunion-media")
-        .getPublicUrl(`${year}/${file.name}`);
-      return {
-        id: file.id ?? file.name, // Fallback to file name if id is undefined
-        year, // Assuming the folder name is the year
-        file_url: publicUrl,
-        type: file.name.endsWith(".mp4") ? "video" : "image", // Simple type inference based on file extension
-        created_at: file.created_at ?? new Date().toISOString(), // Fallback if created_at is undefined
-      };
-    });
-    set((state) => ({
-      media: {
-        ...state.media,
-        [year]: mediaFiles, // ✅ scoped to year
-      },
-      loading: false,
-    }));
   },
-  fetchAllMedia: async (year) => {
-    set({ loading: true });
-    const { data: files, error } = await supabase.storage
-      .from("reunion-media")
-      .list(`${year}/`, {
-        sortBy: { column: "created_at", order: "asc" },
-      });
 
-    if (error) {
-      console.error("Error fetching bucket files:", error);
-      set({ loading: false });
-      return;
-    }
-    const mediaFiles = files.map((file) => {
-      const {
-        data: { publicUrl },
-      } = supabase.storage
-        .from("reunion-media")
-        .getPublicUrl(`${year}/${file.name}`);
-
-      return {
-        id: file.id ?? file.name,
-        year,
-        file_url: publicUrl,
-        type: file.name.endsWith(".mp4") ? "video" : "image",
-        created_at: file.created_at ?? new Date().toISOString(),
-      };
-    });
-
-    set((state) => ({
-      media: {
-        ...state.media,
-        [year]: mediaFiles, // ✅ scoped to year
-      },
-      loading: false,
-    }));
-  },
   uploadFile: async (file, year) => {
     set({ uploading: true });
     try {
-      const fileName = `${year}/${Date.now()}-${file.name}`;
+      // ✅ Upload file to Cloudinary
+      const formData = new FormData();
+      formData.append("file", file); // Append the file to be uploaded
+      formData.append(
+        "upload_preset",
+        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
+      );
 
-      const { error: uploadError } = await supabase.storage
-        .from("reunion-media")
-        .upload(fileName, file);
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/auto/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-      if (uploadError) throw uploadError;
+      const cloudinaryData = await res.json();
+      if (!cloudinaryData.secure_url)
+        throw new Error("Cloudinary upload failed");
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("reunion-media").getPublicUrl(fileName);
+      const file_url = cloudinaryData.secure_url;
 
-      const file_url = publicUrl;
-
+      // ✅ Save Cloudinary URL to Supabase
       const { data, error: insertError } = await supabase
         .from("media")
         .insert([
@@ -124,10 +81,11 @@ export const useAppStore = create<APPSTORE>((set) => ({
 
       if (insertError) throw insertError;
 
+      // ✅ Update state for that year
       set((state) => ({
         media: {
           ...state.media,
-          [year]: [data![0], ...(state.media[year] || [])], // ✅ update only that year
+          [year]: [data![0], ...(state.media[year] || [])],
         },
       }));
     } catch (error) {

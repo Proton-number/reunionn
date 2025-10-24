@@ -3,7 +3,6 @@
 import React, { useEffect } from "react";
 import { ChevronRight, Upload } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import Media from "@/components/Media";
 import { useAppStore } from "@/Store/appStore";
+import { CldImage } from "next-cloudinary";
 
 function Gallery() {
   const { media, fetchMediaByYear, loading } = useAppStore();
@@ -88,14 +88,16 @@ function Gallery() {
                   className="overflow-hidden rounded-lg shadow"
                 >
                   <div className="relative w-full aspect-square">
-                    {item.type.startsWith("video/") ? (
+                    {item.type === "video" || item.type?.includes("video") ? (
                       <video
                         src={item.file_url}
                         className="absolute inset-0 h-full w-full object-cover"
                         controls
+                        muted
+                        playsInline
                       />
                     ) : (
-                      <Image
+                      <CldImage
                         src={item.file_url}
                         alt={`${year} memory`}
                         fill
