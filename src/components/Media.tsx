@@ -67,7 +67,7 @@ export default function Media() {
             <SelectValue placeholder="Choose a year" />
           </SelectTrigger>
           <SelectContent>
-            {[2024, 2023, 2022, 2021, 2020].map((yr) => (
+            {[2024, 2023, 2021, 2020].map((yr) => (
               <SelectItem key={yr} value={String(yr)}>
                 {yr}
               </SelectItem>
