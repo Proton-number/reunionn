@@ -129,9 +129,9 @@ export default function Media() {
                 <Image
                   alt={file.name}
                   width={800}
-                  height={600}
+                  height={200}
                   src={URL.createObjectURL(file)}
-                  className="w-full h-auto object-contain"
+                  className="w-full h-[20vh] object-contain"
                   priority
                 />
               </div>
