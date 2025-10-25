@@ -33,7 +33,7 @@ export const useAppStore = create<APPSTORE>((set) => ({
       if (error) throw error;
 
       set((state) => ({
-        media: { ...state.media, [year]: data || [] },
+        media: { ...state.media, [year]: data || [] }, // scoped to selected year
       }));
     } catch (error) {
       console.error("Error fetching media:", error);
