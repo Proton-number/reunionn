@@ -13,8 +13,13 @@ import { UploadCloud, X, Calendar } from "lucide-react";
 import { FileUploader } from "react-drag-drop-files";
 import { useAppStore } from "@/Store/appStore";
 import Image from "next/image";
+import { toast } from "sonner";
 
-export default function Media() {
+type MediaProps = {
+  onUploadSuccess?: () => void; // Callback after successful upload
+};
+
+export default function Media({ onUploadSuccess }: MediaProps) {
   const { uploadFile, uploading } = useAppStore();
   const [year, setYear] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -32,9 +37,12 @@ export default function Media() {
       await uploadFile(file, parseInt(year));
       setFile(null);
       setYear(null);
+      if (onUploadSuccess) onUploadSuccess();
     } catch (err) {
       console.error("Upload failed:", err);
       alert("Upload failed. Please try again.");
+    } finally {
+      toast.success("File uploaded successfully!");
     }
   };
 
@@ -153,7 +161,9 @@ export default function Media() {
       <Button
         disabled={!file || !year || uploading}
         onClick={handleUpload}
-        className="w-full h-11 sm:h-10 text-base font-medium"
+        className={`w-full h-11 sm:h-10 text-base font-medium ${
+          !file || !year || uploading ? "cursor-not-allowed" : "cursor-pointer"
+        }`}
         size="lg"
       >
         {uploading ? (

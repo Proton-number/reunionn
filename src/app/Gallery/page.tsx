@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  ChevronRight,
-  Upload,
-  X,
-  ChevronLeft,
-  ChevronRight as ChevronRightIcon,
-} from "lucide-react";
+import { ChevronRight, Upload, X, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,6 +24,7 @@ function Gallery() {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [isReady, setIsReady] = useState(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsReady(true), 3000);
@@ -155,9 +150,9 @@ function Gallery() {
               A collection of memorable moments from our annual reunions.
             </p>
           </div>
-          <Dialog>
+          <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full sm:w-auto cursor-pointer">
                 <Upload className="mr-2 h-5 w-5" />
                 Upload New Photos
               </Button>
@@ -166,7 +161,7 @@ function Gallery() {
               <DialogHeader>
                 <DialogTitle>Share Your Memories</DialogTitle>
               </DialogHeader>
-              <Media />
+              <Media onUploadSuccess={() => setUploadDialogOpen(false)} />
             </DialogContent>
           </Dialog>
         </div>
@@ -259,13 +254,14 @@ function Gallery() {
         {lightboxOpen && currentMedia.length > 0 && (
           <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center">
             {/* Close Button */}
-            <button
+            <Button
+              size="icon"
               onClick={closeLightbox}
-              className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              className="absolute top-4 right-4 z-50 p-2 rounded-full  hover:bg-white/20 text-white transition-colors"
               aria-label="Close"
             >
               <X className="h-6 w-6" />
-            </button>
+            </Button>
 
             {/* Counter */}
             <div className="absolute top-4 left-4 z-50 text-white text-sm bg-black/50 px-3 py-1.5 rounded-full">
@@ -274,24 +270,25 @@ function Gallery() {
 
             {/* Previous Button */}
             {currentMedia.length > 1 && (
-              <button
+              <Button
+                size="icon"
+                className="rounded-full absolute left-4 top-1/2 -translate-y-1/2 z-50 hover:bg-white/20 text-white transition-colors cursor-pointer"
                 onClick={goToPrev}
-                className="absolute left-4 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors hidden sm:block"
                 aria-label="Previous"
               >
                 <ChevronLeft className="h-6 w-6" />
-              </button>
+              </Button>
             )}
 
             {/* Next Button */}
             {currentMedia.length > 1 && (
-              <button
-                onClick={goToNext}
-                className="absolute right-4 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors hidden sm:block"
+              <Button
+                size="icon"
+                className="rounded-full absolute right-4 top-1/2 -translate-y-1/2 z-50 hover:bg-white/20 text-white transition-colors cursor-pointer"
                 aria-label="Next"
               >
-                <ChevronRightIcon className="h-6 w-6" />
-              </button>
+                <ChevronRight className="h-6 w-6" />
+              </Button>
             )}
 
             {/* Main Content Area */}

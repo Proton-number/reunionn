@@ -4,6 +4,8 @@ import { useParams } from "next/navigation";
 import { useAppStore } from "@/Store/appStore";
 import { CldImage } from "next-cloudinary";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { div } from "motion/react-client";
 
 function GalleryDetails() {
   const { galleryId } = useParams();
@@ -175,13 +177,14 @@ function GalleryDetails() {
         {lightboxOpen && galleryMedia.length > 0 && (
           <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center">
             {/* Close Button */}
-            <button
+            <Button
+              size="icon"
               onClick={closeLightbox}
-              className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              className="absolute top-4 right-4 z-50 p-2 rounded-full hover:bg-white/20 text-white transition-colors cursor-pointer"
               aria-label="Close"
             >
               <X className="h-6 w-6" />
-            </button>
+            </Button>
 
             {/* Counter */}
             <div className="absolute top-4 left-4 z-50 text-white text-sm bg-black/50 px-3 py-1.5 rounded-full">
@@ -190,24 +193,25 @@ function GalleryDetails() {
 
             {/* Previous Button */}
             {galleryMedia.length > 1 && (
-              <button
+              <Button
+                size="icon"
+                className="rounded-full absolute left-4 top-1/2 -translate-y-1/2 z-50 hover:bg-white/20 text-white transition-colors cursor-pointer"
                 onClick={goToPrev}
-                className="absolute left-4 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors hidden sm:block"
                 aria-label="Previous"
               >
                 <ChevronLeft className="h-6 w-6" />
-              </button>
+              </Button>
             )}
 
             {/* Next Button */}
             {galleryMedia.length > 1 && (
-              <button
-                onClick={goToNext}
-                className="absolute right-4 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors hidden sm:block"
+              <Button
+                size="icon"
+                className="rounded-full absolute right-4 top-1/2 -translate-y-1/2 z-50 hover:bg-white/20 text-white transition-colors cursor-pointer"
                 aria-label="Next"
               >
                 <ChevronRight className="h-6 w-6" />
-              </button>
+              </Button>
             )}
 
             {/* Main Content Area */}
