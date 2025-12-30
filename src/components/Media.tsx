@@ -75,7 +75,7 @@ export default function Media({ onUploadSuccess }: MediaProps) {
             <SelectValue placeholder="Choose a year" />
           </SelectTrigger>
           <SelectContent>
-            {[2024, 2023, 2021, 2020].map((yr) => (
+            {[2025, 2024, 2023, 2021, 2020].map((yr) => (
               <SelectItem key={yr} value={String(yr)}>
                 {yr}
               </SelectItem>

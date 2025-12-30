@@ -8,7 +8,10 @@ import { Camera, Video, Headphones, AudioLines } from "lucide-react";
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 py-20 md:py-32 lg:py-40 overflow-hidden">
-      <section className="relative w-full max-w-4xl">
+      <section
+        className="relative w-full max-w-4xl"
+        aria-labelledby="hero-heading"
+      >
         {/* scattered decorative icons */}
 
         <motion.div
@@ -21,6 +24,7 @@ export default function Home() {
             repeatType: "reverse",
             ease: "easeInOut",
           }}
+          aria-hidden="true"
         >
           <AudioLines className="w-12 h-12 md:w-16 md:h-16" />
         </motion.div>
@@ -34,6 +38,7 @@ export default function Home() {
             repeatType: "reverse",
             ease: "easeInOut",
           }}
+          aria-hidden="true"
         >
           <Camera className="w-12 h-12 md:w-16 md:h-16" />
         </motion.div>
@@ -49,6 +54,7 @@ export default function Home() {
             ease: "easeInOut",
             delay: 0.5,
           }}
+          aria-hidden="true"
         >
           <Video className="w-10 h-10 md:w-14 md:h-14" />
         </motion.div>
@@ -64,6 +70,7 @@ export default function Home() {
             ease: "easeInOut",
             delay: 1,
           }}
+          aria-hidden="true"
         >
           <Headphones className="w-11 h-11 md:w-16 md:h-16" />
         </motion.div>
@@ -88,7 +95,10 @@ export default function Home() {
             nostalgia. Designed to be remembered.
           </motion.p>
 
-          <Link href={"/Gallery"}>
+          <Link
+            href={"/Gallery"}
+            aria-label="View our complete photo and video gallery"
+          >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -102,6 +112,23 @@ export default function Home() {
             </motion.div>
           </Link>
         </div>
+      </section>
+      <section className="sr-only" aria-label="About our reunion gallery">
+        <h2> Reunion Photo Gallery</h2>
+        <p>
+          Welcome to our annual reunion photo gallery. Here you'll find a
+          comprehensive collection of photos and videos documenting our
+          gatherings over the years. Browse memories from recent reunions, view
+          group photos, candid moments, and special events captured during our
+          annual celebrations.
+        </p>
+        <h3>What You'll Find</h3>
+        <ul>
+          <li>High-quality photos from each year's reunion</li>
+          <li>Video recordings of memorable moments</li>
+          <li>Organized galleries by year for easy browsing</li>
+          <li>Ability to upload and share your own reunion photos</li>
+        </ul>
       </section>
     </main>
   );
