@@ -113,23 +113,6 @@ export default function Home() {
           </Link>
         </div>
       </section>
-      <section className="sr-only" aria-label="About our reunion gallery">
-        <h2> Reunion Photo Gallery</h2>
-        <p>
-          Welcome to our annual reunion photo gallery. Here you'll find a
-          comprehensive collection of photos and videos documenting our
-          gatherings over the years. Browse memories from recent reunions, view
-          group photos, candid moments, and special events captured during our
-          annual celebrations.
-        </p>
-        <h3>What You'll Find</h3>
-        <ul>
-          <li>High-quality photos from each year's reunion</li>
-          <li>Video recordings of memorable moments</li>
-          <li>Organized galleries by year for easy browsing</li>
-          <li>Ability to upload and share your own reunion photos</li>
-        </ul>
-      </section>
     </main>
   );
 }

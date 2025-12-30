@@ -40,7 +40,7 @@ function Gallery() {
     years.forEach((year) => {
       fetchMediaByYear(year);
     });
-  }, []);
+  }, [years, fetchMediaByYear]);
 
   const openLightbox = (year: number, index: number) => {
     setCurrentYear(year);
@@ -78,7 +78,7 @@ function Gallery() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxOpen, currentMedia.length]);
+  }, [lightboxOpen, currentMedia.length, goToNext, goToPrev]);
 
   // Handle touch swipe
   const handleTouchStart = (e: React.TouchEvent) => {
