@@ -36,11 +36,11 @@ function Gallery() {
   );
 
   useEffect(() => {
-    // Fetch media for all years on component mount
-    years.forEach((year) => {
+    const yearsToFetch = [2025, 2024, 2023, 2021, 2020];
+    yearsToFetch.forEach((year) => {
       fetchMediaByYear(year);
     });
-  }, [years, fetchMediaByYear]);
+  }, []); // Empty dependency array - run once on mount
 
   const openLightbox = (year: number, index: number) => {
     setCurrentYear(year);
